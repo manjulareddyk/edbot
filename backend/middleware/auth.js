@@ -8,8 +8,9 @@
         if(!token) return res.status(400).json({success:false,message: "Please login first to continue"});
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decoded._id);
-        next();
+        next(); 
     } catch (error) {
         res.status(500).json({success:false,message: error.message});
 0
     }
+}

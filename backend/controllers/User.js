@@ -33,3 +33,57 @@ export const register = async (req, res) => {
         });
     }
 }
+export const verify = async (req, res) => {
+    try {
+        const otp = Number(req.body.otp);
+        const user = await User.findOne(req.user._id);
+        if(user.otp !== otp || user.otp_expiry < Date.now()) return res.status(400).json({success:false,message: "Invalid OTP"});
+        user.verified = true;
+        user.otp = undefined;
+        user.otp_expiry = undefined;
+        await user.save();
+        sendToken(res, user, 200, "Account verified successfully");
+    } catch (error) {
+        res.status(500).json({success:false,message: error.message});
+    }
+}
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter email and password" });
+    }
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Email or Password" });
+    }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Email or Password" });
+    }
+    sendToken(res, user, 200, "Login Successfully");
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.headers });
+  }
+};
+export const logout = async (req, res) => {
+    try {
+      res
+        .status(200)
+        .cookie("token", null, {
+          expires: new Date(Date.now()),
+          httpOnly: true,
+        })
+        .json({ success: true, message: "Logged out Successfully" });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  };
+  
