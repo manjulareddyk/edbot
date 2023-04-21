@@ -34,6 +34,14 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
+        completed: {
+            type: Boolean,
+            default: false,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
     }],
     phoneNumber: {
         type: String,
@@ -69,5 +77,7 @@ userSchema.methods.getJWTToken = function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };  
+
+userSchema.index({ otp_expiry: 1 }, { expireAfterSeconds: 0 });
 
 export const User = mongoose.model("User", userSchema);

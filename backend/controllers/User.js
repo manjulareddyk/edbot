@@ -87,3 +87,47 @@ export const logout = async (req, res) => {
     }
   };
   
+  export const newChat = async (req, res) => {
+    try {
+      const { question, answer } = req.body;
+      const user = await User.findById(req.user._id);
+      user.history.push({ 
+        question, 
+        answer,
+        completed: false,
+        createdAt: new Date(Date.now()),
+       });
+      await user.save();
+      res.status(200).json({ success: true, message: "Chat saved" });
+
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  };
+
+  export const removeChat = async (req, res) => {
+    try {
+      const {chatId} = req.params;
+      const user = await User.findById(req.user._id);
+      user.history = user.history.filter((chat) => chat._id.toString() !== chatId.toString());
+      await user.save();
+      res.status(200).json({ success: true, message: "Chat removed successfully" });
+
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  }
+
+  export const updateChat = async (req, res) => {
+    try {
+      const {chatId} = req.params;
+      const user = await User.findById(req.user._id);
+      user.history = user.history.find((chat)=> chat._id.toString() === chatId.toString());
+      user.history.completed = !user.history.completed;
+      await user.save();
+      res.status(200).json({ success: true, message: "Chat updated successfully" });
+
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  }
