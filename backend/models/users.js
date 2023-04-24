@@ -1,6 +1,39 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+const chatMessageSchema = new mongoose.Schema({
+    message_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    text: {
+      type: String,
+      required: true
+    },
+    timestamp: {
+      type: Date,
+      required: true
+    },
+    is_question: {
+      type: Boolean,
+      required: true
+    }
+});
+const chatSessionSchema = new mongoose.Schema({
+    session_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    session_title: {
+        type: String,
+        required: true
+    },
+    timestamp: {
+      type: Date,
+      required: true
+    },
+    messages: [chatMessageSchema]
+  });
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -25,17 +58,27 @@ const userSchema = new mongoose.Schema({
         default: Date.now,
     },
     // create multi dimensional array
-    history:[{
-        question: {
-            type: String,
-            required: true,
-        },
-        answer: {
-            type: String,
-            required: true,
-        },
+    // history:[{
+    //     question: {
+    //         type: String,
+    //         required: true,
+    //     },
+    //     answer: {
+    //         type: String,
+    //         required: true,
+    //     },
+    //     completed: {
+    //         type: Boolean,
+    //         default: false,
+    //     },
+    //     createdAt: {
+    //         type: Date,
+    //         default: Date.now,
+    //     },
+    // }],
+    history: [{chatSessionSchema,
         completed: {
-            type: Boolean,
+            type: Boolean,  
             default: false,
         },
         createdAt: {

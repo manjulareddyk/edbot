@@ -131,3 +131,22 @@ export const logout = async (req, res) => {
       res.status(500).json({ success: false, message: error.headers });
     }
   }
+
+  export const getMyProfile = async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      sendToken(res, user, 200, `Welcome back ${user.name}`);
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  }
+
+  export const getAnswer = async (req, res) => {
+    try {
+      const question = req.params.question;
+      const stringArray = req.params.stringArray.split(",");
+      res.send({question, answer: stringArray[Math.floor(Math.random() * stringArray.length)]});
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.headers });
+    }
+  }
