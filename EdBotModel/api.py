@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from model import run_model
+from model import run_model_api
+from flask import request
+
 import ast
 app = Flask(__name__)
 api = Api(app)
@@ -10,8 +12,8 @@ parser = reqparse.RequestParser()
 class Users(Resource):
     def get(self):
         data = "4" # convert dataframe to dictionary
-        run_model()
-        return {'data': data}, 200  # return data and 200 OK code
+        answer = run_model()
+        return {'data': answer}, 200  # return data and 200 OK code
     
 class Locations(Resource):
     # methods go here
@@ -19,6 +21,14 @@ class Locations(Resource):
     
 api.add_resource(Users, '/model')  # '/users' is our entry point for Users
 api.add_resource(Locations, '/locations') 
+
+@app.route('/runModel')
+def runModel():
+    # here we want to get the value of user (i.e. ?user=some-value)
+    question = request.args.get('question')
+    answer = run_model_api(question)
+    return answer
+
 
 if __name__ == '__main__':
     app.run()  # run our Flask app
