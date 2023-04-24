@@ -24,11 +24,13 @@ router.route("/login").post(login);
 
 router.route("/logout").get(logout);
 
-router.route("/newChat").post(isAuthenticated, newChat);
-
+router.route("/me").post(isAuthenticated, getMyProfile);
+router.route("")
 router
     .route("/newChat/:chatId")
     .get(isAuthenticated, updateChat)
     .delete(isAuthenticated, removeChat)
+router.route("/getAnswer").post(isAuthenticated, getAnswer);
+
 
 export default router;
