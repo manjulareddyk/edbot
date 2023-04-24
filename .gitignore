@@ -4,10 +4,10 @@ __pycache__/
 *$py.class
 docs/*
 doc.py
-
+node_modules/*
 # C extensions
 *.so
-
+.vscode/*
 # Distribution / packaging
 .Python
 build/
