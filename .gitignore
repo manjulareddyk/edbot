@@ -2,7 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*node_modules/*
+docs/*
+doc.py
+node_modules/*
 # C extensions
 *.so
 .vscode/*
@@ -127,3 +129,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*EdBotModel/docs/*
