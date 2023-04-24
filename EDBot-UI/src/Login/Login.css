@@ -1,0 +1,13 @@
+.login-form button {
+    border: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #7439db;
+  }
+  
+  .login-form button:hover {
+    background-color:  #ceb3f5;
+  }
+  
