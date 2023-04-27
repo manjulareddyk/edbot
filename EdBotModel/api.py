@@ -26,6 +26,7 @@ api.add_resource(Locations, '/locations')
 def runModel():
     # here we want to get the value of user (i.e. ?user=some-value)
     question = request.args.get('question')
+    chat_history = request.args.get('chat_history')
     answer = run_model_api(question)
     return answer
 

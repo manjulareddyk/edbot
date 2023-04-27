@@ -91,7 +91,7 @@ def run_model():
 
 
 
-def run_model_api(question):
+def run_model_api(question, chat_history):
     db = FAISS.load_local("docs/faiss_indices/qualcomm-1.pdf.index", embeddings=OpenAIEmbeddings())
 
 
@@ -110,7 +110,6 @@ def run_model_api(question):
                                             verbose=False)
 
 
-    chat_history = []
     query =  question
     # create_chat_history_vectorstore(query)
     result = qa({"question": query, "chat_history": chat_history})
