@@ -18,163 +18,115 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Pinecone
 from langchain.chains import ChatVectorDBChain
 
-#import pinecone
+import pinecone
 
 
 
 
+def create_chat_history_vectorstore(initial_query):
+    db = FAISS.from_texts(initial_query, embedding=OpenAIEmbeddings())
+    db.save_local("docs/chat_history.index")
 
-def load_document(self, file_path, page_range=None):
-        #load the document using pypdfloader
-        self.loader = PyPDFLoader(file_path=file_path)
-        #split the document into pages
-        self.pages = self.loader.load_and_split()
+def ingest_chat_history(new_query, db):
+    db.add_texts(new_query)
+    db.save_local("docs/chat_history.index")
 
-        #if the page range is specified, only load those pages
-        if page_range:
-            new_docs = [Document(page_content=t.page_content) for t in self.pages
-                        [page_range[0]:page_range[1]]]
-        else:
-            new_docs = [Document(page_content=t.page_content) for t in self.pages]
+def load_chat_history():
+    db = FAISS.load_local("docs/chat_history.index", embeddings=OpenAIEmbeddings())
+    return db
 
-
-        #calculate a hash for the loaded docs
-        new_hash = hashlib.md5(''.join([doc.page_content for doc in new_docs]).encode()).hexdigest()
-
-        
-        #check  weather the database index already exists
-        if not os.path.exists(self.persist_directory):
-            os.makedirs(self.persist_directory)
-
-
-        if os.path.exists(os.path.join(self.persist_directory, 'doc_hash.txt')):
-            with open(os.path.join(self.persist_directory, 'doc_hash.txt'), 'r') as f:
-                stored_hash = f.read().strip()
-
-            if new_hash == stored_hash:
-                # Load exisiting index from disk
-                print("Loading index from the disk...")
-                self.db_index = Chroma(persist_directory=self.persist_directory, embedding_function=self.embeddings)
-            else:
-                self.docs= new_docs
-                self.doc_hash = new_hash
-
-                #create new index
-                print("Creating new index...")
-                self.db_index = Chroma.from_documents(self.docs, self.embeddings, persist_directory=self.persist_directory)
-
-                #save the new hash in the index directory
-                with open(os.path.join(self.persist_directory, 'doc_hash.txt'), 'w') as f:
-                    f.write(self.doc_hash)
-
-        else:
-            self.docs = new_docs
-            self.doc_hash = new_hash
-            #creating a new index
-            print("Creating a new index...")
-            self.db_index = Chroma.from_documents(self.docs, self.embeddings, persist_directory=self.persist_directory)
-
-            #Save the new Hash in the index directory
-            with open(os.path.join(self.persist_directory, 'doc_hash.txt'), 'w') as f:
-                f.write(self.doc_hash)
-
-        #Generate a summery of the loaded documents 
-
-
-
-
-
-
-
-
-
-
-
-llm = OpenAI(temperature=0.9)
+llm = OpenAI(temperature=0.1)
 prompt = PromptTemplate(
     input_variables=["product"],
     template="What is a good name for a company that makes {product}?",
 )
 
-# chain = LLMChain(llm=llm, prompt=prompt)
-# print(chain.run("colorful socks"))
+# ingest_docs()
 
-# QA CHAIN SINGLE DOCUMENT
-                # with open("./docs/state_of_the_union.txt") as f:
-                #     state_of_the_union = f.read()
-                # from langchain import OpenAI
-                # from langchain.chains.summarize import load_summarize_chain
+def run_model():
+    db = FAISS.load_local("docs/faiss_indices/qualcomm-1.pdf.index", embeddings=OpenAIEmbeddings())
 
-                # llm = OpenAI(temperature=0)
-                # summary_chain = load_summarize_chain(llm, chain_type="map_reduce")
+    from langchain.chains import ConversationalRetrievalChain
+    from langchain.prompts import PromptTemplate
 
-                # from langchain.chains import AnalyzeDocumentChain
-                # summarize_document_chain = AnalyzeDocumentChain(combine_docs_chain=summary_chain)
-                # print(summarize_document_chain.run(state_of_the_union))
-                # from langchain.chains.question_answering import load_qa_chain
-                # qa_chain = load_qa_chain(llm, chain_type="map_reduce")
-                # qa_document_chain = AnalyzeDocumentChain(combine_docs_chain=qa_chain)
-                # print(qa_document_chain.run(input_document=state_of_the_union, question="what did the president say about Putin?"))
+    # Adapt if needed
+    CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template("""Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
+    Chat History:
+    {chat_history}
+    Follow Up Input: {question}
+    Standalone question:""")
 
-loader = PyPDFLoader("docs/qualcomm-3.pdf")
-pages = loader.load_and_split()
-print(pages[0].page_content)
+    qa = ConversationalRetrievalChain.from_llm(llm=llm,
+                                            retriever=db.as_retriever(),
+                                            condense_question_prompt=CONDENSE_QUESTION_PROMPT,
+                                            return_source_documents=True,
+                                            verbose=False)
 
 
+    chat_history = []
+    query = "What is this document about?"
+    # create_chat_history_vectorstore(query)
+    result = qa({"question": query, "chat_history": chat_history})
 
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-docs = text_splitter.split_documents(pages)
-
-embeddings = OpenAIEmbeddings()
-db = FAISS.from_documents(documents=docs, embedding=embeddings)
-
-
-from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts import PromptTemplate
-
-# Adapt if needed
-CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template("""Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
-
-Chat History:
-{chat_history}
-Follow Up Input: {question}
-Standalone question:""")
-
-qa = ConversationalRetrievalChain.from_llm(llm=llm,
-                                           retriever=db.as_retriever(),
-                                           condense_question_prompt=CONDENSE_QUESTION_PROMPT,
-                                           return_source_documents=True,
-                                           verbose=False)
+    print("Question:", query)
+    print("Answer:", result["answer"])
 
 
-chat_history = []
-query = "what is the document about?"
-result = qa({"question": query, "chat_history": chat_history})
+    #followup question format
 
-print("Question:", query)
-print("Answer:", result["answer"])
+    # chat_history = [(query, result["answer"])]
+    # query = "Write five questions that you can answer based on the information in the document. Return in the question and answer pairs in a bulleted list format."
+    query = "what is the GPU , CPU , Memory specification for QCS7230 ?"
+    # query = "How can I design my PCB layout to minimize noise and interference and ensure reliable operation of the QCS7230?"
+    result = qa({"question": query, "chat_history": chat_history})
+
+    print("Question:", query)
+    print("Answer:", result["answer"])
 
 
-chat_history = [(query, result["answer"])]
-query = "What are the features?"
-result = qa({"question": query, "chat_history": chat_history})
-
-print("Question:", query)
-print("Answer:", result["answer"])
+    print("CHAT HISTORY")
+    chat_history.append([{query, result["answer"]}])
+    print(chat_history)
+    ch = load_chat_history()
+    ingest_chat_history(query, ch)
 
 
 
-# initialize pinecone
-# pinecone.init(
-#     api_key="ff548156-3ece-4dc3-b8ee-61a43239e77e",  # find at app.pinecone.io
-#     environment="eu-west1-gcp"  # next to api key in console
-# )
+def run_model_api(question):
+    db = FAISS.load_local("docs/faiss_indices/qualcomm-1.pdf.index", embeddings=OpenAIEmbeddings())
 
-# index_name = "demo-index"
+    from langchain.chains import ConversationalRetrievalChain
+    from langchain.prompts import PromptTemplate
 
-# docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
+    # Adapt if needed
+    CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template("""Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
-# query = "What is the document about?"
-# docs1 = docsearch.similarity_search(query)
-# print((docs1))
+    Chat History:
+    {chat_history}
+    Follow Up Input: {question}
+    Standalone question:""")
+
+    qa = ConversationalRetrievalChain.from_llm(llm=llm,
+                                            retriever=db.as_retriever(),
+                                            condense_question_prompt=CONDENSE_QUESTION_PROMPT,
+                                            return_source_documents=True,
+                                            verbose=False)
+
+
+    chat_history = []
+    query =  question
+    # create_chat_history_vectorstore(query)
+    result = qa({"question": query, "chat_history": chat_history})
+
+    print("Question:", query)
+    print("Answer:", result["answer"])
+    
+    return result["answer"]
+
+
+
+    
+
+# Run if not using api
+# run_model()
