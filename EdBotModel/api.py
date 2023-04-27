@@ -41,7 +41,14 @@ def runModelJson():
     answer = run_model_api(que, chat)
     return answer
 
-
+@app.route('/runModelJsonTest', methods=['POST'])
+def runModelJsonTest():
+    data = json.loads(request.data)
+    # print(data)
+    que = data["question"]
+    chat= data["chat_history"]
+    ans = "Answer sample"
+    return answer
 
 if __name__ == '__main__':
     app.run()  # run our Flask app
