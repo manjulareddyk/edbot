@@ -8,8 +8,9 @@ function Register (props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
-
 
   const handleSignup = () => {     
     navigate('/login'); // Redirect to the register page
@@ -17,6 +18,14 @@ function Register (props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      setPhoneError("Phone number must be 10 digits");
+      return;
+    }
     try {
       const response = await fetch("http://localhost:4000/api/v1/register", {
         method: "POST",
@@ -35,6 +44,14 @@ function Register (props) {
       console.log(data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handlePhoneNumberChange = (e) => {
+    const enteredValue = e.target.value;
+    if (/^\d*$/.test(enteredValue)) { // only allow numbers
+      setPhoneNumber(enteredValue);
+      setPhoneError("");
     }
   };
 
@@ -73,35 +90,42 @@ function Register (props) {
         <label htmlFor="confirmPassword">Confirm Password</label>
         <input
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setPasswordError("");
+          }}
           type="password"
           placeholder="********"
           id="confirmPassword"
           name="confirmPassword"
           required
         />
+        {passwordError && <span className="error-message">{passwordError}</span>}
         <label htmlFor="phoneNumber">Phone Number</label>
         <input
           value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          onChange={handlePhoneNumberChange}
           type="tel"
           placeholder="Eg: 9876543210"
           id="phoneNumber"
           name="phoneNumber"
+          maxLength="10"
           required
         />
-        <button type="submit" className="register-button">
+        {phoneError && <span className="error-message">{phoneError}</span>}
+        <button type="submit" className="register-button">     
           Register
-        </button>
-      </form>
+          </button>
+    </form>
       <button
         className="link-btn"
         onClick={handleSignup}
       >
         Already have an account? Login here.
-      </button>
-    </div>
-  );
+     </button>
+   </div>
+ );
 };
 
 export default Register;
+
