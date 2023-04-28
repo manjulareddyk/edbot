@@ -7,6 +7,10 @@ import {
     newChat,
     updateChat,
     removeChat,
+    getMyProfile,
+    getAnswer
+    
+
 } from '../controllers/User.js';
 
 import { isAuthenticated } from '../middleware/auth.js';
