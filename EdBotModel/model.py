@@ -15,10 +15,10 @@ from langchain.chains import LLMChain
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Pinecone
 from langchain.chains import ChatVectorDBChain
+from langchain.chains import ConversationalRetrievalChain
+from langchain.prompts import PromptTemplate
 
-import pinecone
 
 
 
@@ -46,9 +46,7 @@ prompt = PromptTemplate(
 def run_model():
     db = FAISS.load_local("docs/faiss_indices/qualcomm-1.pdf.index", embeddings=OpenAIEmbeddings())
 
-    from langchain.chains import ConversationalRetrievalChain
-    from langchain.prompts import PromptTemplate
-
+    
     # Adapt if needed
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template("""Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
@@ -66,7 +64,7 @@ def run_model():
 
     chat_history = []
     query = "What is this document about?"
-    # create_chat_history_vectorstore(query)
+    create_chat_history_vectorstore(query)
     result = qa({"question": query, "chat_history": chat_history})
 
     print("Question:", query)
@@ -93,11 +91,9 @@ def run_model():
 
 
 
-def run_model_api(question):
+def run_model_api(question, chat_history):
     db = FAISS.load_local("docs/faiss_indices/qualcomm-1.pdf.index", embeddings=OpenAIEmbeddings())
 
-    from langchain.chains import ConversationalRetrievalChain
-    from langchain.prompts import PromptTemplate
 
     # Adapt if needed
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template("""Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
@@ -114,7 +110,6 @@ def run_model_api(question):
                                             verbose=False)
 
 
-    chat_history = []
     query =  question
     # create_chat_history_vectorstore(query)
     result = qa({"question": query, "chat_history": chat_history})

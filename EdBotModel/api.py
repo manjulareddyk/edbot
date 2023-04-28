@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from model import run_model_api
 from flask import request
+import json
 
 import ast
 app = Flask(__name__)
@@ -26,9 +27,28 @@ api.add_resource(Locations, '/locations')
 def runModel():
     # here we want to get the value of user (i.e. ?user=some-value)
     question = request.args.get('question')
-    answer = run_model_api(question)
+    chat_history = request.args.get('chat_history')
+    answer = run_model_api(question, chat_history)
     return answer
 
+
+@app.route('/runModelJson', methods=['POST'])
+def runModelJson():
+    data = json.loads(request.data)
+    # print(data)
+    que = data["question"]
+    chat= data["chat_history"]
+    answer = run_model_api(que, chat)
+    return answer
+
+@app.route('/runModelJsonTest', methods=['POST'])
+def runModelJsonTest():
+    data = json.loads(request.data)
+    # print(data)
+    que = data["question"]
+    chat= data["chat_history"]
+    ans = "Answer sample"
+    return answer
 
 if __name__ == '__main__':
     app.run()  # run our Flask app
