@@ -23,7 +23,7 @@
     
     .side-menu-button {
     padding: 15px;
-    border:1px solid white;
+    border:2px, white;
     border-radius: 5px;
     text-align: left;
     transition:ease 0.25s all;

@@ -15,10 +15,8 @@ from langchain.chains import LLMChain
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Pinecone
 from langchain.chains import ChatVectorDBChain
 
-import pinecone
 import os
 
 folder_path = "docs/"
@@ -49,5 +47,5 @@ def ingest_docs(filename):
 
 
 # Run only once, to create the chat history vector store.
-# for filename in os.listdir(folder_path):
-#     ingest_docs(filename)
+for filename in os.listdir(folder_path):
+    ingest_docs(filename)

@@ -1,7 +1,16 @@
+import React, { useState,useContext} from "react";
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from "react";
 import './Login.css';
 function Login() {
+import { AuthContext } from "../Context/Authcontext";
+// import GoogleLogin from 'react-google-login';
+// import FacebookLogin from 'react-facebook-login';
+
+// create a context to store the JWT token and user ID
+
+
+function Login({ children }) { // children prop added
+  const {  login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -9,8 +18,33 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSignup = () => {     
-    navigate('/register'); // Redirect to the register page
+    navigate('/register'); 
   }
+
+//   const handleGoogleLogin = async () => {
+//   const provider = new GoogleLogin.auth.GoogleAuthProvider();
+//     GoogleLogin.auth().signInWithPopup(provider)
+//       .then((result) => {
+//       console.log(result);
+//        navigate('/gptui'); // Redirect to the UI page
+//       }).catch((error) => {
+//       console.log(error);
+//   // Add code to display an error message or update the UI as necessary
+//   });
+    
+// }
+    
+// const handleFacebookLogin = async () => {
+// const provider = new FacebookLogin.auth.FacebookAuthProvider();
+//   FacebookLogin.auth().signInWithPopup(provider)
+//     .then((result) => {
+//     console.log(result);
+//     navigate('/gptui'); // Redirect to the UI page
+//      }).catch((error) => {
+//     console.log(error);
+//     // Add code to display an error message or update the UI as necessary
+//      });
+//   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,20 +54,28 @@ function Login() {
       const response = await fetch('http://localhost:4000/api/v1/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password })
       });
 
       if (response.ok) {
+        const data = await response.json();
         console.log('Login successful!');
-        navigate('/gptui'); // Redirect to the UI page
+        login(data.user._id,data.token);
+        console.log(data.user._id,data.token);
+
+        // login(data.user._id,response.headers.get('token'));
+        // console.log(data.user._id,response.headers.get('token'));
+
+        console.log(data.user.history);
+        navigate('/gptui'); 
       } else {
         console.log('Login failed.');
-        // Add code to display an error message or update the UI as necessary
       }
     }
   }
+
 
   const validate = () => {
     let valid = true;
@@ -59,7 +101,7 @@ function Login() {
     }
     return valid;
   };
-
+ 
   return (
     <div className="auth-form-container">
       <h2>Login</h2>
@@ -99,8 +141,5 @@ function Login() {
       </button>
     </div>
   );
-};
 
 export default Login;
-
-

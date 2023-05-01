@@ -64,4 +64,73 @@
     cursor: pointer;
     text-decoration: underline;
   }
+   */
+
+
+   .auth-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto;
+    padding: 20px;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .auth-form-container h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .login-form label {
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .login-btn {
+    background-color: #1c19d0;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .link-btn {
+    background-color: transparent;
+    color: #1e1bcb;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
   
