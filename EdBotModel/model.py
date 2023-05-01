@@ -79,7 +79,6 @@ def run_model():
     print("Question:", query)
     print("Answer:", result["answer"])
 
-
     print("CHAT HISTORY")
     chat_history.append([{query, result["answer"]}])
     print(chat_history)

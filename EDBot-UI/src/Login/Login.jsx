@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from "react";
 import './Login.css';
-
 function Login() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -38,7 +37,6 @@ function Login() {
 
   const validate = () => {
     let valid = true;
-
     //  email validation
     if (!email) {
       setEmailError('Email is required');
@@ -49,7 +47,6 @@ function Login() {
     } else {
       setEmailError('');
     }
-
     // password validation
     if (!password) {
       setPasswordError('Password is required');
@@ -60,7 +57,6 @@ function Login() {
     } else {
       setPasswordError('');
     }
-
     return valid;
   };
 
@@ -76,6 +72,7 @@ function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="youremail@gmail.com"
+          required // added required attribute
         />
         {emailError && <p className="error-message">{emailError}</p>}
 
@@ -87,6 +84,7 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="********"
+          required // added required attribute
         />
          {passwordError && <p className="error-message">{passwordError}</p>}
         <button type="submit" className="login-btn">
@@ -99,7 +97,6 @@ function Login() {
       >
         Don't have an account? Sign up.
       </button>
-
     </div>
   );
 };
