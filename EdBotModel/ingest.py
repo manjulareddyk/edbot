@@ -14,7 +14,6 @@ import os
 from langchain.chains import LLMChain
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import ChatVectorDBChain
 
 import os
