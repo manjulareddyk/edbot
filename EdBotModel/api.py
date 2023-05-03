@@ -48,7 +48,7 @@ def runModelJsonTest():
     que = data["question"]
     chat= data["chat_history"]
     ans = "Answer sample"
-    return answer
+    return ans
 
 if __name__ == '__main__':
     app.run()  # run our Flask app

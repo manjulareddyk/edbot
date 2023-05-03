@@ -1,24 +1,27 @@
 import os
 
+from langchain.chains.query_constructor.base import AttributeInfo
 import pinecone
+from langchain.vectorstores import Pinecone
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import Pinecone
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.llms import OpenAI
+from langchain.retrievers.self_query.base import SelfQueryRetriever
+
 
 
 pinecone.init(api_key=os.environ["PINECONE_API_KEY"], environment=os.environ["PINECONE_ENV"])
-
-from langchain.vectorstores import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
 
 embed = OpenAIEmbeddings()
 
 lang_vectorstore = Pinecone.from_existing_index('langchain-self-retriever-demo', embedding=embed)
 
-from langchain.llms import OpenAI
-from langchain.retrievers.self_query.base import SelfQueryRetriever
+
 
 
 llm = OpenAI(temperature=0)
 
-from langchain.chains.query_constructor.base import AttributeInfo
 
 metadata_field_info=[
     AttributeInfo(
