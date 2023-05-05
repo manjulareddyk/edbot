@@ -5,6 +5,6 @@ while true; do
     if [ "$input" = "exit" ]; then
         break
     fi
-    echo "You entered: $input"
+    echo | $input
 done
 
