@@ -5,7 +5,7 @@ type Props = {
 };
 
 function Message({ message }: Props) {
-  const isChaseGPT = message.user.name === "ChaseGPT";
+  const isChaseGPT = message.user.name === "EdBot";
 
   return (
     <div className={`py-5 text-white ${isChaseGPT && "bg-[#434654]"}`}>

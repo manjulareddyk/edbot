@@ -38,12 +38,12 @@ function HomePage() {
           </div>
 
           <div className="space-y-2">
-            <p className="infoText">Change the ChaseGPT Model to use</p>
+            <p className="infoText">Change the EDBot Model to use</p>
             <p className="infoText">
               Massages are stored in Firebase's Firestore
             </p>
             <p className="infoText">
-              Hot Toast notifications when ChaseGPT is thinking!
+              Hot Toast notifications when Edbot is thinking!
             </p>
           </div>
         </div>
