@@ -1,0 +1,9 @@
+langchain
+openai
+pypdf
+tiktoken
+faiss-cpu
+flask
+flask-restful
+flask_jwt_extended
+flask_cors
